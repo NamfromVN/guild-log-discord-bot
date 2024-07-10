@@ -41,7 +41,7 @@ class Serverlog(commands.Cog):
         elif check["status"] == "Data_Found": #* CÓ DỮ LIỆU
                         old_channel_webhook = await self.bot.serverdb.get_webhook(ctx.guild_id)
                         webhook = await channel.create_webhook(name="Kaillen Log")
-                        await self.bot.serverdb.remove_server_log(ctx.guild_id, old_channel_webhook)
+                        # await self.bot.serverdb.remove_server_log(ctx.guild_id, old_channel_webhook)
                         await self.bot.serverdb.setupserverlog(ctx.guild.id, webhook.url)
                         embed = disnake.Embed(title="Server Log", description=f"{self.bot.handle_language.get(language['language'], 'commands','change_server_log_channel').format(**kwargs)}")
                         embed.set_thumbnail("https://media.discordapp.net/stickers/1039992459209490513.png")

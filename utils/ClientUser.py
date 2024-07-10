@@ -10,6 +10,7 @@ from disnake.ext import commands
 from utils.server.language_handle import LocalizationManager
 from utils.server.process_webhook import Process_webhook
 from utils.server.databases import Server
+from utils.server.newdb import Databases
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,7 @@ class ClientUser(commands.AutoShardedBot):
     def __init__(self, *args, intents, command_sync_flag, command_prefix: str, **kwargs) -> None:
         super().__init__(*args, **kwargs, intents=intents, command_sync_flags=command_sync_flag, command_prefix=command_prefix)
         self.uptime = disnake.utils.utcnow()
-        self.serverdb = Server()
+        self.serverdb = Databases()
         self.db =None
         self.handle_language = LocalizationManager()
         self.webhook_utils = Process_webhook()

@@ -189,7 +189,7 @@ class GuildIgnoredRoleCache():
     
     async def get_ignored_roles(self, guild_id: int) -> list[int]:
         guild = await self.get(guild_id)
-        return guild.get_array()
+        return guild.get_array() 
         
     
 
