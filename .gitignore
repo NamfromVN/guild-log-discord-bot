@@ -167,3 +167,4 @@ cython_debug/
 EventDEV/
 ModuleDEV/
 test.py
+langDB.sql
