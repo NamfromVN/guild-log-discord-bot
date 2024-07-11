@@ -19,7 +19,7 @@ class OnGuildRoleDelete(commands.Cog):
         guild_id = role.guild.id
 
         
-        data = await self.client.serverdb.get_guild_webhook(guild_id)
+        data = await self.client.serverdb.get_webhook(guild_id)
         language = await self.client.serverdb.guild_language(role.guild.id)
 
         if data is None:

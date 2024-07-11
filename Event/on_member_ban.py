@@ -16,7 +16,7 @@ class BanEvent(commands.Cog):
     async def on_member_ban(self, guild: disnake.Guild, user: disnake.User):
  
 
-        data = await self.client.serverdb.get_guild_webhook(guild.id)
+        data = await self.client.serverdb.get_webhook(guild.id)
         language = await self.client.serverdb.guild_language(guild.id)
 
         if data is None:

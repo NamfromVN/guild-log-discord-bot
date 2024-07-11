@@ -13,7 +13,7 @@ class OnMessageEdit(commands.Cog):
         self.client = client
 
     @commands.Cog.listener()
-    async def on_message_edit(self, before: disnake.Member, after):
+    async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
         if not before.guild or before.author.bot: return
         check = await self.client.serverdb.check_mute(before.author.roles, before.guild.id)
         if check == True: return
@@ -21,7 +21,7 @@ class OnMessageEdit(commands.Cog):
             return #! Ignore if the message is the same
         language = await self.client.serverdb.guild_language(before.guild.id)
 
-        data = await self.client.serverdb.get_guild_webhook(before.guild.id)
+        data = await self.client.serverdb.get_webhook(before.guild.id)
 
         if data is None:
             return
@@ -36,7 +36,7 @@ class OnMessageEdit(commands.Cog):
             timestamp=datetime.now(HCM),
         )
         try:
-         embed.add_field(name=self.client.handle_language.get(language["language"], 'user',"go_to_msg"), value=f"[Message]({message})", inline=False)
+         embed.add_field(name="", value=f"[Message]({message})", inline=False)
         except Exception as e:
             print(e)
         embed.add_field(name=self.client.handle_language.get(language["language"], "commands","before"), value=before.content, inline=False)

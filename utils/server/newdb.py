@@ -150,11 +150,7 @@ class Databases():
         return self.cache.get(guild_id, "webhook_url") 
 
     async def setupserverlog(self, guildID, webhook_url):
-        try:
-            self.cache.set(guildID, "webhook_url", webhook_url)
-        except Exception:
-            await self.cache.setupdefault(guildID)
-            self.cache.set(guildID, "webhook_url", webhook_url)
+        self.cache.set(guildID, "webhook_url", webhook_url)
              
     async def get_ignored_roles(self, guild_id: int) -> list | None:
         return self.cache.get(guild_id, "ignoreroles")
@@ -208,11 +204,11 @@ class Databases():
             }
         
     async def check_database(self, guildID):
-        raw_data = await s2a(self.guild.find_one)({"id": guildID})
-        if raw_data["webhook_url"] is None:
+        raw_data = self.cache.get(guildID, "welhook_url")
+        if raw_data is None:
             return {"status": "No_Data"}
         else:
-            return {"status": "Data_Found", "webhook_uri": raw_data["webhook_url"]}
+            return {"status": "Data_Found", "webhook_uri": raw_data}
 
     async def remove_server_data(self, guild_id: int):
         self.cache.delete(guild_id)

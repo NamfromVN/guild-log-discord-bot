@@ -20,7 +20,7 @@ class OnMessageDelete(commands.Cog):
         if check == True:
             return
 
-        data = await self.client.serverdb.get_guild_webhook(message.guild.id)
+        data = await self.client.serverdb.get_webhook(message.guild.id)
         language = await self.client.serverdb.guild_language(message.guild.id)
 
         if data is None:

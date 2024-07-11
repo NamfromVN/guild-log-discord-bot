@@ -36,7 +36,7 @@ class OnMemberUpdate(commands.Cog):
 
             language = await self.client.serverdb.guild_language(after.guild.id)
 
-            webhook_uri = await self.client.serverdb.get_guild_webhook(after.guild.id)
+            webhook_uri = await self.client.serverdb.get_webhook(after.guild.id)
 
             if webhook_uri is None:
                 return

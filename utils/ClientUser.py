@@ -8,9 +8,8 @@ import disnake
 from disnake.ext import commands
 
 from utils.server.language_handle import LocalizationManager
-from utils.server.process_webhook import Process_webhook
-from utils.server.databases import Server
 from utils.server.newdb import Databases
+from utils.server.process_webhook import Process_webhook
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +30,9 @@ class ClientUser(commands.AutoShardedBot):
             logger.info(f"Client: {self.user.name} - {self.user.id} Ready")
             await self.process_rpc()
 
-
-            
     async def on_resume(self):
         logger.info(f"Client Resumed")
-        
- 
-            
+
     async def process_rpc(self):
         activity = disnake.Activity(
                         type=disnake.ActivityType.watching,
@@ -48,7 +43,6 @@ class ClientUser(commands.AutoShardedBot):
         
     def close(self):
         self.serverdb.close()
-        self.serverdb.guilds_webhook_cache.clear()
         return super().close()
 
 
@@ -112,7 +106,7 @@ class ClientUser(commands.AutoShardedBot):
                         break
 
 def start():
-    logger.info("Booting Client....")
+    logger.info("> Booting Client....")
     
     DISCORD_TOKEN = os.environ.get("TOKEN")
     
@@ -146,7 +140,7 @@ def start():
         logger.warning(f"No MongoDB database connected, abort")
         exit()
 
-    bot.task.run(bot.serverdb.connect_to_MongoDB(os.environ.get("MONGOSERVER")))
+    bot.task.run(bot.serverdb.loadDB(os.environ.get("MONGOSERVER")))
 
     try:
         bot.run(DISCORD_TOKEN)
