@@ -21,7 +21,7 @@ class OnGuildChannelUpdate(commands.Cog):
             return
 
         if before.name != after.name:
-            data = await self.client.serverdb.get_guild_webhook(before.guild.id)
+            data = await self.client.serverdb.get_webhook(before.guild.id)
 
             if data is None:
                 return

@@ -16,7 +16,7 @@ class OnGuildRoleCreate(commands.Cog):
     async def on_guild_role_create(self, role: disnake.Role): 
   
 
-        data = await self.client.serverdb.get_guild_webhook(role.guild.id)
+        data = await self.client.serverdb.get_webhook(role.guild.id)
         language = await self.client.serverdb.guild_language(role.guild.id)
 
         if data is None:

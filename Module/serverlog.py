@@ -23,7 +23,6 @@ class Serverlog(commands.Cog):
     @commands.slash_command(name="serverlog", description=f"{desc_prefix}Set the serverlog channel", options=[Option("channel", "The channel to set the serverlog to", OptionType.channel, required=True)])
     async def serverlog(self, ctx: Union[commands.Context, ApplicationCommandInteraction], channel: disnake.TextChannel):
         await ctx.response.defer()
-        await self.bot.serverdb.delwebhookcache(ctx.guild_id)
         check = await self.bot.serverdb.check_database(ctx.guild.id)
         language = await self.bot.serverdb.guild_language(ctx.guild_id)
         kwargs = {
@@ -55,7 +54,6 @@ class Serverlog(commands.Cog):
                             options=[disnake.Option("role", "The role to ignore", OptionType.role, required=True, max_length=20, min_length=1, max_value=20)])
     async def ignorerole(self, ctx: Union[commands.Context, ApplicationCommandInteraction], role: disnake.Role):
         await ctx.response.defer(ephemeral=True)
-        await self.bot.serverdb.delrolecache(ctx.guild.id)
         if role == ctx.guild.default_role:
             await ctx.edit_original_response("Bạn không thể sử dụng role này!")
             return
