@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class Cache():
     storage: dict[int, dict] = {}
-    
+
     async def setupdefault(self, guildID = None):
         if guildID is None: return
         await s2a(self.database.db.guild.insert_one)({"id": guildID, 

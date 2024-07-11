@@ -27,11 +27,8 @@ class ClientUser(commands.AutoShardedBot):
         
     
     async def on_ready(self):
-            logger.info(f"Client: {self.user.name} - {self.user.id} Ready")
+            logger.info(f" Client: {self.user.name} - {self.user.id} Ready")
             await self.process_rpc()
-
-    async def on_resume(self):
-        logger.info(f"Client Resumed")
 
     async def process_rpc(self):
         activity = disnake.Activity(

@@ -1,14 +1,15 @@
-import disnake
-from gtts import gTTS
-from disnake.ext import commands
-from disnake import FFmpegPCMAudio
-
-import re
-import platform
-import traceback
-import sqlite3
-
+import logging
 import os
+import platform
+import re
+import sqlite3
+import traceback
+
+import disnake
+from disnake import FFmpegPCMAudio
+from disnake.ext import commands
+from gtts import gTTS
+
 from utils.ClientUser import ClientUser as Client
 
 LANGUAGE_LIST = ["English", "Tiếng Việt", "日本語", "русский", "中国人"]
@@ -51,7 +52,7 @@ async def save_lang_tts(guildID, language):
     mouse = comm.cursor()
     mouse.execute("""INSERT INTO guildLang (guildID, language) VALUES (?, ?)""", (guildID, language))
     comm.commit()
-    comm.close
+    comm.close()
     
 async def get_tts_lang(guildID):
     comm = sqlite3.connect("langDB.sql")
@@ -60,19 +61,18 @@ async def get_tts_lang(guildID):
         mouse.execute("SELECT language FROM guildLang WHERE guildID = ?", (guildID,))
         data = mouse.fetchone()
         if not data:
-            return "vi"
+            return "Tiếng Việt"
         
         return data[0]
     finally:
-        mouse.close()
         comm.close()
 
-async def on_init():
+def inittable():
     comm = sqlite3.connect("langDB.sql")
     mouse = comm.cursor()
-    mouse.execute("""CREATE TABLE IF NOT EXISTS guildLang (
+    mouse.execute("""CREATE TABLE IF NOT EXISTS guildLang(
                                                 guildID INTERGER,
-                                                language TEXT DEFAULT)""")
+                                                language TEXT DEFAULT 'Tiếng Việt')""")
     comm.commit()
     comm.close()
 
@@ -104,11 +104,9 @@ class TTS(commands.Cog):
 
     def __init__(self, bot: Client):
         self.bot = bot
-        on_init()
+        inittable()
 
-    @check_voice()
     @commands.cooldown(1, 5, commands.BucketType.user)
-    @commands.max_concurrency(1, per=commands.BucketType.member, wait=False)
     @commands.command(description=f"{desc_prefix}Tạo âm thanh từ văn bản", aliases=["s", "speak"])
     async def say(self, ctx: disnake.AppCommandInteraction, *, content = None):
             if platform.system() == "Windows":
@@ -119,9 +117,19 @@ class TTS(commands.Cog):
                 await ctx.send("Nya Nya nyan, pliz join a voice channel")
                 return
 
+            if not ctx.guild.me.voice:
+
+                perms = ctx.author.voice.channel.permissions_for(ctx.guild.me)
+
+                if not perms.connect:
+                    await ctx.send("Nya! 💢, I dont have perm to connect to your channel")
+                    return
+
             # Xử lý dữ liệu ngôn ngữ
             lang = await get_tts_lang(ctx.author.guild.id)
             convlang = await convert_language(lang)
+
+            # Task
             await process_tts(content, ctx.guild.id, ctx.channel.id, convlang)
             
             channel = ctx.author.voice.channel
@@ -139,7 +147,7 @@ class TTS(commands.Cog):
             channel_id = ctx.channel.id
             guild_id = ctx.guild.id
 
-            if vc.is_playing():
+            while vc.is_playing():
                 return
 
 
@@ -156,29 +164,33 @@ class TTS(commands.Cog):
                 # else:
                     traceback.print_exc()
                     await ctx.channel.send(f"Nya! 💢")
-                    return
 
-    @check_voice()
+
+
     @commands.command(description=f"{desc_prefix}Disconnect", aliases=["stoptts"])
     async def tts_stop(self, ctx: disnake.ApplicationCommandInteraction):
+        
         vc = ctx.author.guild.voice_client
         if vc:
-            
+            if ctx.author.id not in ctx.guild.me.voice.channel.voice_states:
+                await ctx.send("Nya! 💢, you are not on my channel.")
+                return
             await vc.disconnect()
-            await ctx.channel.send("Đã ngắt kết nối với kênh thoại.")
+            await ctx.send("Disconnected.", delete_after=3)
             try:
-                os.remove(f"./data_tts/{guild_id}/{channel_id}_tts.mp3")
+                os.remove(f"./data_tts/{ctx.guild.id}/{ctx.guild.me.voice.channel.id}_tts.mp3")
             except FileNotFoundError:
                 print("Error at line 122: File Not Found :<")
                 pass
             except Exception as e:
-                await ctx.channel.send(f"Đã xảy ra lỗi: {repr(e)}")
+                await ctx.channel.send(f"Nya! 💢")
+                logging.error(f"Error {e}")
         else:
             await ctx.channel.send("Tôi đang không kết nối với kênh thoại nào.")
     
     @commands.cooldown(1, 15, commands.BucketType.guild)
     @commands.has_guild_permissions(manage_channels=True)
-    @commands.slash_command("tts_language", description=f"{desc_prefix} Change language for tts module", options=[disnake.Option('language', description='Language')])
+    @commands.slash_command(name = "tts_language", description=f"{desc_prefix} Change language for tts module", options=[disnake.Option('language', description='Language')])
     async def tts_language(self, ctx: disnake.ApplicationCommandInteraction, language: str = None):
         await ctx.response.defer(ephemeral=True)
         await save_lang_tts(ctx.author.guild.id, language)

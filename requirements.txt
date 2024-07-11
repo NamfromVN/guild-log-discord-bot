@@ -1,4 +1,5 @@
 disnake
+disnake[voice]
 python-dotenv
 colorama
 pymongo
