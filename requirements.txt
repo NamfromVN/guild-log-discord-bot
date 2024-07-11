@@ -7,3 +7,4 @@ pytz
 psutil
 humanize
 requests
+gtts
