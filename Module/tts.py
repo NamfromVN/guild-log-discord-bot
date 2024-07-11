@@ -130,7 +130,6 @@ class TTS(commands.Cog):
             convlang = await convert_language(lang)
 
             # Task
-            await process_tts(content, ctx.guild.id, ctx.channel.id, convlang)
             
             channel = ctx.author.voice.channel
             
@@ -140,28 +139,20 @@ class TTS(commands.Cog):
                 if "Already connected to a voice channel" in str(e):
                     vc = ctx.author.guild.voice_client
                 else:
-                    vc = ctx.author.guild.voice_client
-
-            global channel_id, guild_id
-
-            channel_id = ctx.channel.id
+                    traceback.print_exc()
+                    await ctx.channel.send(f"Nya! 💢")
+                    return
+                    
+            channel_id = ctx.guild.me.voice.channel.id
             guild_id = ctx.guild.id
-
-            while vc.is_playing():
-                return
+            
+            await process_tts(content, ctx.guild.id, channel_id, convlang)
 
 
             try:
                 vc.play(FFmpegPCMAudio(f"./data_tts/{guild_id}/{channel_id}_tts.mp3"))
                 
-
-                   
             except Exception as e:
-                # if "ffmepg was not found" in str(e):
-                #     await ctx.channel.send("Không tìm thấy ffmpeg, hãy chắc chắn rằng bạn đã chạy tệp `autoinstall.sh`")
-                #     traceback.print_exc()
-                #     return
-                # else:
                     traceback.print_exc()
                     await ctx.channel.send(f"Nya! 💢")
 
@@ -175,18 +166,18 @@ class TTS(commands.Cog):
             if ctx.author.id not in ctx.guild.me.voice.channel.voice_states:
                 await ctx.send("Nya! 💢, you are not on my channel.")
                 return
-            await vc.disconnect()
-            await ctx.send("Disconnected.", delete_after=3)
             try:
                 os.remove(f"./data_tts/{ctx.guild.id}/{ctx.guild.me.voice.channel.id}_tts.mp3")
             except FileNotFoundError:
-                print("Error at line 122: File Not Found :<")
                 pass
             except Exception as e:
                 await ctx.channel.send(f"Nya! 💢")
                 logging.error(f"Error {e}")
+            
+            await vc.disconnect()
+            await ctx.send("Disconnected.", delete_after=3)
         else:
-            await ctx.channel.send("Tôi đang không kết nối với kênh thoại nào.")
+            await ctx.channel.send("Nya! 💢, I'm not connected to any voice channel.")
     
     @commands.cooldown(1, 15, commands.BucketType.guild)
     @commands.has_guild_permissions(manage_channels=True)
