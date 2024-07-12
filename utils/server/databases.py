@@ -99,7 +99,6 @@ class Cache():
         guildData = self.get_guild(guild_id)
         if role_id not in guildData["ignoreroles"]:
             guildData["ignoreroles"].append(role_id)
-            print(guildData)
         else:
             guildData["ignoreroles"].remove(role_id)
         if commit: asyncio.create_task(self.commit(guild_id, True))
