@@ -168,3 +168,4 @@ EventDEV/
 ModuleDEV/
 test.py
 langDB.sql
+utils/server/old_db.py

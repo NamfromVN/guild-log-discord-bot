@@ -7,8 +7,8 @@ import os
 import disnake
 from disnake.ext import commands
 
+from utils.server.databases import Databases
 from utils.server.language_handle import LocalizationManager
-from utils.server.newdb import Databases
 from utils.server.process_webhook import Process_webhook
 
 logger = logging.getLogger(__name__)
