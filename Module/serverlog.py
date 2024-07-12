@@ -70,7 +70,7 @@ class Serverlog(commands.Cog):
                             await self.bot.serverdb.remove_ignore_role(ctx.guild.id, role.id)
                             await ctx.edit_original_response(embed=REMOVE_embed)
         elif check["status"] == "No_Data":
-            cmd = f"</serverlog:" + str(self.bot.pool.controller_bot.get_global_command_named("serverlog", cmd_type=disnake.ApplicationCommandType.chat_input).id) +">"
+            cmd = f"</serverlog:" + str(self.bot.get_global_command_named("serverlog", cmd_type=disnake.ApplicationCommandType.chat_input).id) +">"
             await ctx.edit_original_response(embed=Embed.gen_error_embed(self.bot.handle_language.get(language["language"], "commands","server_log_not_found").format(cmd=cmd)))
             return
         
