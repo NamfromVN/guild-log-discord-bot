@@ -146,7 +146,7 @@ class TTS(commands.Cog):
             channel_id = ctx.guild.me.voice.channel.id
             guild_id = ctx.guild.id
             
-            await process_tts(content, ctx.guild.id, channel_id, convlang)
+            await process_tts(content, guild_id, channel_id, convlang)
 
 
             try:
