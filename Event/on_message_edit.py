@@ -36,7 +36,7 @@ class OnMessageEdit(commands.Cog):
             timestamp=datetime.now(HCM),
         )
         try:
-         embed.add_field(name="", value=f"[Message]({message})", inline=False)
+         embed.add_field(name=self.client.handle_language.get(language["language"], 'user',"go_to_msg"), value=f"[Message]({message})", inline=False)
         except Exception as e:
             print(e)
         embed.add_field(name=self.client.handle_language.get(language["language"], "commands","before"), value=before.content, inline=False)
