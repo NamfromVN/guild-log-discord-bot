@@ -9,6 +9,7 @@ import disnake
 from disnake import FFmpegPCMAudio
 from disnake.ext import commands
 from gtts import gTTS
+from asgiref.sync import sync_to_async as s2a
 
 from utils.ClientUser import ClientUser as Client
 
@@ -91,7 +92,7 @@ async def convert_language(lang):
                 }
     return langlist.get(lang)
 
-async def process_tts(text, guild_id, channel_id, lang):
+def process_tts(text, guild_id, channel_id, lang):
     tts = gTTS(text, lang=lang)
     if not os.path.exists(f'./data_tts/{guild_id}'):
         os.makedirs(f'./data_tts/{guild_id}')
@@ -146,11 +147,12 @@ class TTS(commands.Cog):
             channel_id = ctx.guild.me.voice.channel.id
             guild_id = ctx.guild.id
             
-            await process_tts(content, guild_id, channel_id, convlang)
+            await s2a(process_tts)(content, guild_id, channel_id, convlang)
 
 
             try:
                 vc.play(FFmpegPCMAudio(f"./data_tts/{guild_id}/{channel_id}_tts.mp3"))
+
                 
             except Exception as e:
                     traceback.print_exc()
