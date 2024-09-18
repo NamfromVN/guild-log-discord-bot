@@ -97,7 +97,7 @@ def start():
     bot  = ClientUser(intents=intents, command_prefix="k!", command_sync_flag=command_sync_config)
     
     bot.load_modules()
-    create_task(bot._watchdog())
+
 
 
     if not os.environ.get("MONGOSERVER"):
