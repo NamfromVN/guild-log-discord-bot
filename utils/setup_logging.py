@@ -29,9 +29,9 @@ class SpectificLevelFilter(logging.Filter):
             return record.levelno == self.level
 
 ## Format (console only)
-INFO_FORMAT = f"> {Style.DIM}[%(asctime)s]{Style.RESET_ALL} [%(name)s:%(lineno)d] [✅] {Fore.GREEN}[%(levelname)s] - %(message)s{Style.RESET_ALL}"
-WARNING_FORMAT = f"> {Style.DIM}[%(asctime)s]{Style.RESET_ALL} [%(name)s:%(lineno)d] [⚠️]  {Fore.YELLOW}[%(levelname)s] - %(message)s{Style.RESET_ALL}"
-ERROR_FORMAT = f"> {Style.DIM}[%(asctime)s]{Style.RESET_ALL} [%(name)s:%(lineno)d] [❌] {Fore.RED}[%(levelname)s] - %(message)s{Style.RESET_ALL}"
+INFO_FORMAT = f"{Style.DIM}[%(asctime)s]{Style.RESET_ALL} [%(name)s:%(lineno)d] [✅] {Fore.GREEN}[%(levelname)s] - %(message)s{Style.RESET_ALL}"
+WARNING_FORMAT = f"{Style.DIM}[%(asctime)s]{Style.RESET_ALL} [%(name)s:%(lineno)d] [⚠️]  {Fore.YELLOW}[%(levelname)s] - %(message)s{Style.RESET_ALL}"
+ERROR_FORMAT = f"{Style.DIM}[%(asctime)s]{Style.RESET_ALL} [%(name)s:%(lineno)d] [❌] {Fore.RED}[%(levelname)s] - %(message)s{Style.RESET_ALL}"
 
 DATEFMT="%d-%m-%Y %H:%M:%S"
 

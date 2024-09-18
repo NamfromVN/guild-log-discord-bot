@@ -15,8 +15,8 @@ class OnMessageEdit(commands.Cog):
     @commands.Cog.listener()
     async def on_message_edit(self, before: disnake.Message, after: disnake.Message):
         if not before.guild or before.author.bot: return
-        check = await self.client.serverdb.check_mute(before.author.roles, before.guild.id)
-        if check == True: return
+        check = await self.client.serverdb.check_mute(before.author._roles, before.guild.id)
+        if check: return
         if before.content == after.content:
             return #! Ignore if the message is the same
         language = await self.client.serverdb.guild_language(before.guild.id)
@@ -35,10 +35,8 @@ class OnMessageEdit(commands.Cog):
             color=disnake.Color.red(),
             timestamp=datetime.now(HCM),
         )
-        try:
-         embed.add_field(name=self.client.handle_language.get(language["language"], 'user',"go_to_msg"), value=f"[Message]({message})", inline=False)
-        except Exception as e:
-            print(e)
+
+        embed.add_field(name=self.client.handle_language.get(language["language"], 'user',"go_to_msg"), value=f"[Message]({message})", inline=False)
         embed.add_field(name=self.client.handle_language.get(language["language"], "commands","before"), value=before.content, inline=False)
         embed.add_field(name=self.client.handle_language.get(language["language"], "commands","after"), value=after.content, inline=False)
 

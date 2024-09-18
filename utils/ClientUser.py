@@ -3,12 +3,13 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+from asyncio import create_task
 
 import disnake
 from disnake.ext import commands
 
 from utils.server.databases import Databases
-from utils.server.language_handle import LocalizationManager
+from utils.loc import loc
 from utils.server.process_webhook import Process_webhook
 
 logger = logging.getLogger(__name__)
@@ -20,11 +21,11 @@ class ClientUser(commands.AutoShardedBot):
         self.uptime = disnake.utils.utcnow()
         self.serverdb = Databases()
         self.db =None
-        self.handle_language = LocalizationManager()
+        self.handle_language = loc
         self.webhook_utils = Process_webhook()
         self.remote_git_url = os.environ.get("SOURCE")
         self.task = asyncio
-        
+        self.environ = os.environ
     
     async def on_ready(self):
             logger.info(f" Client: {self.user.name} - {self.user.id} Ready")
@@ -38,14 +39,14 @@ class ClientUser(commands.AutoShardedBot):
         logger.info('Load RPC')
         await ClientUser.change_presence(self, activity=activity)
         
-    def close(self):
+    async def close(self):
         self.serverdb.close()
-        return super().close()
+        return await super().close()
 
 
     def load_modules(self):
 
-        modules_dir = ["Module", "ModuleDEV"]
+        modules_dir = ["Module", "ModuleDEV", "Event"]
 
 
         for module_dir in modules_dir:
@@ -68,39 +69,7 @@ class ClientUser(commands.AutoShardedBot):
                     except Exception as e:
                             logger.error(f"Đã có lỗi xảy ra với Module {file}: Lỗi: {repr(e)}")
                             break
-                
-                
 
-
-    
-    def load_events(self):
-
-        eventdir =  ["Event", "EventDEV"]
-
-        for events_dir in eventdir:
-
-            for item in os.walk(events_dir):
-                files = filter(lambda f: f.endswith('.py'), item[-1])
-                for file in files:
-                    filename, _ = os.path.splitext(file)
-                    module_filename = os.path.join(events_dir, filename).replace('\\', '.').replace('/', '.')
-                    try:
-                        self.reload_extension(module_filename)
-                        logger.info(f'Event {file} Đã tải lên thành công')
-
-                    except (commands.ExtensionAlreadyLoaded, commands.ExtensionNotLoaded):
-                        try:
-                            self.load_extension(module_filename)
-                            logger.info(f'Event {file} Đã tải lên thành công')
-
-                        except Exception as e:
-                            logger.error(f"Đã có lỗi xảy ra với Event {file}: Lỗi: {repr(e)}")
-
-                            continue
-                    except Exception as e:
-                        logger.error(f"Đã có lỗi xảy ra với Event {file}: Lỗi: {repr(e)}")
-
-                        break
 
 def start():
     logger.info("> Booting Client....")
@@ -128,10 +97,8 @@ def start():
     bot  = ClientUser(intents=intents, command_prefix="k!", command_sync_flag=command_sync_config)
     
     bot.load_modules()
-    
-    bot.load_events()
+    create_task(bot._watchdog())
 
-    bot.handle_language.load_localizations()
 
     if not os.environ.get("MONGOSERVER"):
         logger.warning(f"No MongoDB database connected, abort")

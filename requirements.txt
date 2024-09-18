@@ -9,3 +9,4 @@ psutil
 humanize
 requests
 gtts
+aiosqlite

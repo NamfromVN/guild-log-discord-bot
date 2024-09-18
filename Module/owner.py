@@ -62,7 +62,6 @@ class Owner(commands.Cog):
     async def reload_module(self):
     
         self.bot.load_modules()
-        self.bot.load_events()
         
 
     @commands.is_owner()

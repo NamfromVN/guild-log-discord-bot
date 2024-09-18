@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import asyncio
 import logging
-
+from typing import Optional
 from asgiref.sync import sync_to_async as s2a
 from pymongo import MongoClient
 
@@ -27,7 +29,7 @@ class Cache():
             logger.error(f"Đã xảy ra lỗi khi xoá dữ liệu guild {guild_id} trên database: {repr(e)}")
 
     async def __commit_all__(self):
-        "Automatic commit cache to database every 10 minutes"
+        """Automatic commit cache to database every 10 minutes"""
         while True:
             await asyncio.sleep(600)
             count = 0
@@ -57,7 +59,7 @@ class Cache():
         logger.info(f"Đã đồng bộ cache của {count} guilds lên database")
 
     def get_guild(self, guild_id: int) -> dict:
-        "Fetch guild data from remote database"
+        """Fetch guild data from remote database"""
         guild = self.storage.get(guild_id, None)
         if guild is not None: return guild
         # If no guild data in storage
@@ -67,7 +69,7 @@ class Cache():
             "webook_url": None,
             "ignoreroles": []
         }
-        if data["synced"] == False:
+        if not data["synced"]:
             logger.info(f"Đang lấy dữ liệu cho guildID: {guild_id}")
             try:
                 guild_data = self.database.db.guild.find_one({"guild_id": guild_id})
@@ -84,11 +86,11 @@ class Cache():
                 return self.storage[guild_id]
 
     def get(self, guild_id: int, properties: str):
-        "Get guild properties"
+        """Get guild properties"""
         return self.get_guild(guild_id).get(properties, None)
 
     def set(self, guild_id: int, properties: str, value, commit = False) -> None:
-        "Set guild properties"
+        """Set guild properties"""
         guild = self.get_guild(guild_id)
         guild[properties] = value
         guild["synced"] = False
@@ -104,14 +106,14 @@ class Cache():
         if commit: asyncio.create_task(self.commit(guild_id, True))
 
     def delete(self, guild_id: int):
-        "Remove guild data"
+        """Remove guild data"""
         try:
             self.storage.pop(guild_id)
             asyncio.create_task(self.__remove_guild_data_remotedb__(guild_id))
         except: pass
 
     async def commit(self, guild_id: int, force_sync: bool = False) -> bool:
-        "Commit cache to remote database"
+        """Commit cache to remote database"""
         guild = self.storage.get(guild_id, None)
         if guild is None: return False
         if force_sync == False and guild["synced"]: return False
@@ -126,9 +128,11 @@ class Cache():
             return False
 
 
-class Databases():
+class Databases:
     def __init__(self) -> None:
-        pass
+        self.dbclient: Optional[MongoClient] = None
+        self.cache = None
+        self.guild = None
 
     async def loadDB(self, serveruri = None):
         self.dbclient = MongoClient(host=serveruri)
@@ -175,16 +179,11 @@ class Databases():
 
     async def check_mute(self, roles, guild: int) -> bool:
                 data = self.cache.get(guild, "ignoreroles") or []
-                if data == [] or not data:
+                if not data:
                     return False
-                roleID = [role.id for role in roles]
                 for roleData in data:
-                    if roleData:
-                        for roleIDs in roleID:
-                            if roleData != roleIDs:
-                                continue
-                            else:
-                                return True
+                    if int(roleData) in roles:
+                        return True
                     return False
 
     async def check_role(self, guildID, roleID):
@@ -215,5 +214,3 @@ class Databases():
 
     async def remove_server_data(self, guild_id: int):
         self.cache.delete(guild_id)
-        
-    

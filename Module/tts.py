@@ -1,8 +1,9 @@
+from asyncio import create_task
 import logging
 import os
 import platform
 import re
-import sqlite3
+import aiosqlite
 import traceback
 
 import disnake
@@ -48,34 +49,37 @@ def check_voice():
 
     return commands.check(predicate)
 
+
 async def save_lang_tts(guildID, language):
-    comm = sqlite3.connect("langDB.sql")
-    mouse = comm.cursor()
-    mouse.execute("""INSERT INTO guildLang (guildID, language) VALUES (?, ?)""", (guildID, language))
-    comm.commit()
-    comm.close()
+    async with aiosqlite.connect("langDB.sql") as comm:
+        cur = await comm.cursor()
+        await cur.execute("""INSERT INTO guildLang (guildID, language) VALUES (?, ?)""", (guildID, language))
+    await comm.commit()
+    await comm.close()
+    
     
 async def get_tts_lang(guildID):
-    comm = sqlite3.connect("langDB.sql")
-    try:
-        mouse = comm.cursor()
-        mouse.execute("SELECT language FROM guildLang WHERE guildID = ?", (guildID,))
-        data = mouse.fetchone()
-        if not data:
-            return "Tiếng Việt"
-        
-        return data[0]
-    finally:
-        comm.close()
+    async with aiosqlite.connect("langDB.sql") as comm:
+        try:
+            mouse = await comm.cursor()
+            await mouse.execute("SELECT language FROM guildLang WHERE guildID = ?", (guildID,))
+            data = await mouse.fetchone()
+            if not data:
+                return "Tiếng Việt"
 
-def inittable():
-    comm = sqlite3.connect("langDB.sql")
-    mouse = comm.cursor()
-    mouse.execute("""CREATE TABLE IF NOT EXISTS guildLang(
-                                                guildID INTERGER,
-                                                language TEXT DEFAULT 'Tiếng Việt')""")
-    comm.commit()
-    comm.close()
+            return data[0]
+        finally:
+            await comm.close()
+        
+
+async def setup_table():
+    async with aiosqlite.connect("langDB.sql") as comm:
+        mouse = await comm.cursor()
+        await mouse.execute("""CREATE TABLE IF NOT EXISTS guildLang(
+                                                    guildID INTERGER,
+                                                    language TEXT DEFAULT 'Tiếng Việt')""")
+    await comm.commit()
+    await comm.close()
 
 
 async def check_lang(lang):
@@ -92,11 +96,13 @@ async def convert_language(lang):
                 }
     return langlist.get(lang)
 
+
 def process_tts(text, guild_id, channel_id, lang):
     tts = gTTS(text, lang=lang)
     if not os.path.exists(f'./data_tts/{guild_id}'):
         os.makedirs(f'./data_tts/{guild_id}')
     tts.save(f'./data_tts/{guild_id}/{channel_id}_tts.mp3')
+
 
 class TTS(commands.Cog):
     emoji = "🔊"
@@ -105,7 +111,7 @@ class TTS(commands.Cog):
 
     def __init__(self, bot: Client):
         self.bot = bot
-        inittable()
+        create_task(setup_table())
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(description=f"{desc_prefix}Tạo âm thanh từ văn bản", aliases=["s", "speak"])
@@ -154,7 +160,7 @@ class TTS(commands.Cog):
                 vc.play(FFmpegPCMAudio(f"./data_tts/{guild_id}/{channel_id}_tts.mp3"))
 
                 
-            except Exception as e:
+            except Exception:
                     traceback.print_exc()
                     await ctx.channel.send(f"Nya! 💢")
 
@@ -190,9 +196,12 @@ class TTS(commands.Cog):
         await ctx.edit_original_response(f"Language changed to: {language}")
         
     @tts_language.autocomplete('language')
-    async def get_lang(inter: disnake.Interaction, lang: str):
+    async def get_lang(self, inter: disnake.Interaction, lang: str):
         lang = lang.lower()
-        return [lang for lang in LANGUAGE_LIST]
+        if not lang:
+            return [lang for lang in LANGUAGE_LIST]
+
+        return [lang for lang in LANGUAGE_LIST if lang.lower() == lang.lower()]
         
 
 def setup(bot: Client):

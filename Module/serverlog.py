@@ -63,7 +63,7 @@ class Serverlog(commands.Cog):
         REMOVE_embed = disnake.Embed(title="REMOVE ROLE", description=f'{self.bot.handle_language.get(language["language"], "commands","remove_ignore_role_msg").format(role_name=role.name)}', color=disnake.Color.green()).set_footer(text=self.bot.handle_language.get(language['language'], 'commands','interact_user').format(user=ctx.author.name), icon_url=self.bot.user.avatar)
         if check["status"] == "Data_Found":
                         role_check = await self.bot.serverdb.check_role(ctx.guild.id, role.id)
-                        if role_check["info"] == False:
+                        if not role_check["info"]:
                             await self.bot.serverdb.setup_ignored_roles(ctx.guild.id, role.id)
                             await ctx.send(embed=ADD_embed)
                         else:

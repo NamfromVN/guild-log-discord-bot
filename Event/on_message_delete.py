@@ -15,9 +15,9 @@ class OnMessageDelete(commands.Cog):
     @commands.Cog.listener()
     async def on_message_delete(self, message: disnake.Message):
         if not message.guild or message.author.bot: return
-        check = await self.client.serverdb.check_mute(message.author.roles, message.guild.id)
+        check = await self.client.serverdb.check_mute(message.author._roles, message.guild.id)
         
-        if check == True:
+        if check:
             return
 
         data = await self.client.serverdb.get_webhook(message.guild.id)

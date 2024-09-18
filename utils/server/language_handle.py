@@ -7,12 +7,11 @@ class LocalizationManager():
         self.locale_dir = locale_dir
         self.localizations = {}
         
-    
 
     def load_localizations(self, silent: bool = False):
         """Tải các dữ liệu bản dịch vào RAM"""
         for root, dirs, files in os.walk(self.locale_dir):
-            # Chỉ lấy thư mục ngôn ngữ (tránh thư mục gốc và các thư mục không phải ngôn ngữ)
+           
             if root == self.locale_dir:
                 continue
 
@@ -26,7 +25,7 @@ class LocalizationManager():
                         category = filename[:-5]
                         self.localizations[language_code][category] = json.load(file)
                         if not silent:
-                            logger.info(f"Loaded file {filename} for {language_code} language :>")
+                            logger.info(f"Loaded file {filename} for {language_code} language")
                            
 
     def get(self, locale: str, categoryKey: str, key: str) -> str:
