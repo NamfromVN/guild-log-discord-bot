@@ -1,4 +1,4 @@
-from asyncio import create_task
+from asyncio import run
 import logging
 import os
 import platform
@@ -111,7 +111,7 @@ class TTS(commands.Cog):
 
     def __init__(self, bot: Client):
         self.bot = bot
-        create_task(setup_table())
+        run(setup_table())
 
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.command(description=f"{desc_prefix}Tạo âm thanh từ văn bản", aliases=["s", "speak"])
