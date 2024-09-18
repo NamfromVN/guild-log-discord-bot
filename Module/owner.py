@@ -77,6 +77,17 @@ class Owner(commands.Cog):
 
     @commands.is_owner()
     @commands.command()
+    async def guildData(self, ctx: disnake.ApplicationCommandInteraction, guildID = None):
+        if guildID is None:
+            return
+        try:
+            s = await self.bot.serverdb.get_ignored_roles(guildID)
+            await ctx.send(s)
+        except:
+            pass
+
+    @commands.is_owner()
+    @commands.command()
     async def shutdown(self, ctx: disnake.ApplicationCommandInteraction):
         await ctx.send("GoodBye")
         await asyncio.sleep(5)
