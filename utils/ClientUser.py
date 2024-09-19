@@ -34,14 +34,15 @@ class ClientUser(commands.AutoShardedBot):
     async def process_rpc(self):
         activity = disnake.Activity(
                         type=disnake.ActivityType.watching,
-                        name="Guild log",
+                        name="ArisDev@KaillenModBot",
                     )
         logger.info('Load RPC')
         await ClientUser.change_presence(self, activity=activity)
         
-    async def close(self):
+    def close(self):
+        logger.warning("Đã nhận tín hiệu ngắt bot..")
         self.serverdb.close()
-        return await super().close()
+        return super().close()
 
 
     def load_modules(self):
@@ -108,6 +109,8 @@ def start():
 
     try:
         bot.run(DISCORD_TOKEN)
+    except KeyboardInterrupt:
+        bot.close()
     except Exception as e:
         if  "LoginFailure" in str(e):
             logger.error("An Error occured:", repr(e))

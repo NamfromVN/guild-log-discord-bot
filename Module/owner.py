@@ -69,11 +69,13 @@ class Owner(commands.Cog):
     async def restart(self, ctx: disnake.ApplicationCommandInteraction):
         await ctx.send("Đang khởi động lại...")
         await asyncio.sleep(5)
-        await self.bot.close()
+        self.bot.close()
         try:
             os.system("python3 main.py")
         except:
             os.system("py main.py")
+
+    # debug
 
     @commands.is_owner()
     @commands.command()
@@ -88,10 +90,19 @@ class Owner(commands.Cog):
 
     @commands.is_owner()
     @commands.command()
+    async def get_role_list(self, ctx: disnake.ApplicationCommandInteraction):
+        roles = ctx.author._roles
+        role_list = []
+        for role in roles:
+            role_list.append(role)
+        await ctx.send(role_list) # type: ignore
+
+    @commands.is_owner()
+    @commands.command()
     async def shutdown(self, ctx: disnake.ApplicationCommandInteraction):
         await ctx.send("GoodBye")
         await asyncio.sleep(5)
-        await self.bot.close()
+        self.bot.close()
 
 
     @commands.is_owner()
