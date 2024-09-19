@@ -15,8 +15,14 @@ class OnMessageDelete(commands.Cog):
     @commands.Cog.listener()
     async def on_message_delete(self, message: disnake.Message):
         if not message.guild or message.author.bot: return
-        check = await self.client.serverdb.check_mute(message.author._roles, message.guild.id)
-        
+
+        user_role_list = []
+        if message.author._roles:
+            for role_ids in message.author._roles:
+                user_role_list.append(role_ids)
+
+        check = await self.client.serverdb.check_mute(user_role_list, message.guild.id)
+        user_role_list.clear()
         if check:
             return
 

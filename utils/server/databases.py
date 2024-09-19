@@ -8,7 +8,7 @@ from pymongo import MongoClient
 
 logger = logging.getLogger(__name__)
 
-class Cache():
+class Cache:
     storage: dict[int, dict] = {}
 
     async def setupdefault(self, guildID = None):
@@ -178,13 +178,13 @@ class Databases:
         self.cache.role_cache(guildID, roleID, commit=True)
 
     async def check_mute(self, roles, guild: int) -> bool:
-                data = self.cache.get(guild, "ignoreroles") or []
-                if not data:
-                    return False
-                for roleData in data:
-                    if int(roleData) in roles:
-                        return True
-                    return False
+        data = self.cache.get(guild, "ignoreroles")
+        if not data:
+            return False
+        for roleData in data:
+            if int(roleData) in roles:
+                return True
+            return False
 
     async def check_role(self, guildID, roleID):
         data = self.cache.get(guildID, "ignoreroles")
@@ -210,7 +210,7 @@ class Databases:
         if raw_Data is None:
             return {"status": "No_Data"}
         else:
-            return {"status": "Data_Found", "webhook_uri": raw_Data}
+            return {"status": "Data_Found", "webhook_url": raw_Data}
 
     async def remove_server_data(self, guild_id: int):
         self.cache.delete(guild_id)
