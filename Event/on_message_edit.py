@@ -20,14 +20,14 @@ class OnMessageEdit(commands.Cog):
         if before.author._roles:
             for role_ids in before.author._roles:
                 user_role_list.append(role_ids)
-        check = await self.client.serverdb.check_mute(user_role_list, before.guild.id)
+        check = self.client.serverdb.check_ignore_role(user_role_list, before.guild.id)
         user_role_list.clear()
         if check: return
         if before.content == after.content:
             return #! Ignore if the message is the same
-        language = await self.client.serverdb.guild_language(before.guild.id)
+        language = self.client.serverdb.guild_language(before.guild.id)
 
-        data = await self.client.serverdb.get_webhook(before.guild.id)
+        data = self.client.serverdb.get_webhook(before.guild.id)
 
         if data is None:
             return

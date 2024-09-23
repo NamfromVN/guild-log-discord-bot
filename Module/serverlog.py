@@ -2,7 +2,7 @@
 from typing import Union
 
 import disnake
-from disnake import Option, OptionType, ApplicationCommandInteraction
+from disnake import Option, OptionType, ApplicationCommandInteraction, Role
 from disnake.ext import commands
 
 from utils.ClientUser import ClientUser
@@ -23,8 +23,8 @@ class Serverlog(commands.Cog):
     @commands.slash_command(name="serverlog", description=f"{desc_prefix}Set the serverlog channel", options=[Option("channel", "The channel to set the serverlog to", OptionType.channel, required=True)])
     async def serverlog(self, ctx: Union[commands.Context, ApplicationCommandInteraction], channel: disnake.TextChannel):
         await ctx.response.defer()
-        check = await self.bot.serverdb.check_database(ctx.guild.id)
-        language = await self.bot.serverdb.guild_language(ctx.guild_id)
+        check = self.bot.serverdb.check_database(ctx.guild.id)
+        language = self.bot.serverdb.guild_language(ctx.guild_id)
         kwargs = {
             "guild_name": ctx.guild.name,
             "channel_mention": channel.mention
@@ -38,7 +38,7 @@ class Serverlog(commands.Cog):
                                      icon_url=ctx.author.avatar.url)
                     await ctx.edit_original_response(embed=embed)
         elif check["status"] == "Data_Found": #* CÓ DỮ LIỆU
-                        old_channel_webhook = await self.bot.serverdb.get_webhook(ctx.guild_id)
+                        # old_channel_webhook = await self.bot.serverdb.get_webhook(ctx.guild_id)
                         webhook = await channel.create_webhook(name="Kaillen Log")
                         # await self.bot.serverdb.remove_server_log(ctx.guild_id, old_channel_webhook)
                         await self.bot.serverdb.setupserverlog(ctx.guild.id, webhook.url)
@@ -57,23 +57,43 @@ class Serverlog(commands.Cog):
         if role == ctx.guild.default_role:
             await ctx.edit_original_response("Bạn không thể sử dụng role này!")
             return
-        check = await self.bot.serverdb.check_database(ctx.guild.id)
-        language = await self.bot.serverdb.guild_language(ctx.guild_id)
+        check = self.bot.serverdb.check_database(ctx.guild.id)
+        language = self.bot.serverdb.guild_language(ctx.guild_id)
         ADD_embed = disnake.Embed(title="ADD ROLE", description=f'{self.bot.handle_language.get(language["language"], "commands","add_ignore_role_msg").format(role_name=role.name)}', color=disnake.Color.green()).set_footer(text=self.bot.handle_language.get(language['language'], 'commands','interact_user').format(user=ctx.author.name), icon_url=self.bot.user.avatar)
         REMOVE_embed = disnake.Embed(title="REMOVE ROLE", description=f'{self.bot.handle_language.get(language["language"], "commands","remove_ignore_role_msg").format(role_name=role.name)}', color=disnake.Color.green()).set_footer(text=self.bot.handle_language.get(language['language'], 'commands','interact_user').format(user=ctx.author.name), icon_url=self.bot.user.avatar)
         if check["status"] == "Data_Found":
-                        role_check = await self.bot.serverdb.check_role(ctx.guild.id, role.id)
+                        role_check = self.bot.serverdb.check_role(ctx.guild.id, role.id)
                         if not role_check["info"]:
-                            await self.bot.serverdb.setup_ignored_roles(ctx.guild.id, role.id)
+                            self.bot.serverdb.setup_ignored_roles(ctx.guild.id, role.id)
                             await ctx.send(embed=ADD_embed)
                         else:
-                            await self.bot.serverdb.remove_ignore_role(ctx.guild.id, role.id)
+                            self.bot.serverdb.remove_ignore_role(ctx.guild.id, role.id)
                             await ctx.edit_original_response(embed=REMOVE_embed)
         elif check["status"] == "No_Data":
             cmd = f"</serverlog:" + str(self.bot.get_global_command_named("serverlog", cmd_type=disnake.ApplicationCommandType.chat_input).id) +">"
             await ctx.edit_original_response(embed=Embed.gen_error_embed(self.bot.handle_language.get(language["language"], "commands","server_log_not_found").format(cmd=cmd)))
             return
-        
-        
+
+    @commands.has_guild_permissions(manage_roles = True, manage_guild=True)
+    @commands.slash_command(name="list_ignore_role", description=f"{desc_prefix} Return a whole ignore role list")
+    async def list_ignore_role(self, ctx: Union[commands.Context, ApplicationCommandInteraction]):
+        await ctx.response.defer(ephemeral=True)
+        check = self.bot.serverdb.check_database(ctx.guild.id)
+        if not check["webhook_url"]:
+            return await ctx.edit_original_response("Máy chủ này chưa thiết lập serverlog!", ephemeral=True) # type: ignore
+        ignore_list: list[Role] = []
+        response: list[str] = []
+        data = self.bot.serverdb.get_ignored_roles(ctx.guild.id)
+        language = self.bot.serverdb.guild_language(ctx.guild.id)
+        if data is None:
+            return await ctx.edit_original_response("Không có role nào được cài đặt cả")
+        for role in data:
+            ignore_list.append(ctx.guild.get_role(role))
+        for role in ignore_list:
+            response.append(f"{role.mention} • {role.id} \n")
+        embed = disnake.Embed()
+        embed.title = self.bot.handle_language.get(language["language"], "commands", "list_ignore_role_msg")
+        embed.description = "".join(response)
+        await ctx.send(embed=embed)
         
 def setup(bot: ClientUser): bot.add_cog(Serverlog(bot))

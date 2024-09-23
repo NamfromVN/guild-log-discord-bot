@@ -11,5 +11,6 @@
     "pingDescription": "Kiểm tra ping của bot",
     "changeLanguageDescription": "Thay đổi ngôn ngữ mà bot sẽ phản hồi trong máy chủ",
     "before": "Trước đó",
-    "after": "Sau"
+    "after": "Sau",
+    "list_ignore_role_msg": "Các vai trò sẽ bị bỏ qua"
 }

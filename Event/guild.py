@@ -16,15 +16,13 @@ class GuildEntry(commands.Cog):
     async def remove_data(self, guild: disnake.Guild):
 
         logger.info(f"Bị xóa khỏi máy chủ: {guild.name} - [{guild.id}]")
-        data = await self.client.serverdb.get_guild_webhook(guild.id)
+        data = self.client.serverdb.get_webhook(guild.id)
         
-        if data["status"] == "No_Data":
+        if data is None:
             return
-        
-        guild_webhook = data
-        
+
         try:
-            self.client.serverdb.cache.delete(guild.id)
+            self.client.serverdb.remove_server_data(guild.id)
         except Exception as e:
             logger.error(f"Đã xảy ra lỗi {e}")
 

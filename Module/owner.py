@@ -83,7 +83,7 @@ class Owner(commands.Cog):
         if guildID is None:
             return
         try:
-            s = await self.bot.serverdb.get_ignored_roles(guildID)
+            s = self.bot.serverdb.get_ignored_roles(guildID)
             await ctx.send(s)
         except:
             pass

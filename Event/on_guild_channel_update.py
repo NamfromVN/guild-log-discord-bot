@@ -21,12 +21,12 @@ class OnGuildChannelUpdate(commands.Cog):
             return
 
         if before.name != after.name:
-            data = await self.client.serverdb.get_webhook(before.guild.id)
+            data = self.client.serverdb.get_webhook(before.guild.id)
 
             if data is None:
                 return
             
-            language = await self.client.serverdb.guild_language(before.guild.id)
+            language = self.client.serverdb.guild_language(before.guild.id)
 
             try:
                 channel = data

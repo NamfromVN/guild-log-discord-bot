@@ -21,13 +21,13 @@ class OnMessageDelete(commands.Cog):
             for role_ids in message.author._roles:
                 user_role_list.append(role_ids)
 
-        check = await self.client.serverdb.check_mute(user_role_list, message.guild.id)
+        check = self.client.serverdb.check_ignore_role(user_role_list, message.guild.id)
         user_role_list.clear()
         if check:
             return
 
-        data = await self.client.serverdb.get_webhook(message.guild.id)
-        language = await self.client.serverdb.guild_language(message.guild.id)
+        data = self.client.serverdb.get_webhook(message.guild.id)
+        language = self.client.serverdb.guild_language(message.guild.id)
 
         if data is None:
             return

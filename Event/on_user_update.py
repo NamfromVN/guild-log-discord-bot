@@ -34,9 +34,9 @@ class OnMemberUpdate(commands.Cog):
                 "role": roleChange
             }
 
-            language = await self.client.serverdb.guild_language(after.guild.id)
+            language = self.client.serverdb.guild_language(after.guild.id)
 
-            webhook_uri = await self.client.serverdb.get_webhook(after.guild.id)
+            webhook_uri = self.client.serverdb.get_webhook(after.guild.id)
 
             if webhook_uri is None:
                 return

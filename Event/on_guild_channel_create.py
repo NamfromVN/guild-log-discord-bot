@@ -17,10 +17,10 @@ class OnGuildChannelCreate(commands.Cog):
         if channel.name.startswith("ticket"):
             return
         
-        language = await self.client.serverdb.guild_language(channel.guild.id)
+        language = self.client.serverdb.guild_language(channel.guild.id)
    
 
-        data = await self.client.serverdb.get_webhook(channel.guild.id)
+        data = self.client.serverdb.get_webhook(channel.guild.id)
 
         if data is None:
             return

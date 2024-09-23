@@ -2,7 +2,7 @@ import os, json
 import logging
 
 logger = logging.getLogger(__name__)
-class LocalizationManager():
+class LocalizationManager:
     def __init__(self, locale_dir='language'):
         self.locale_dir = locale_dir
         self.localizations = {}

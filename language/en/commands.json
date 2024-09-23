@@ -11,5 +11,6 @@
     "pingDescription": "Check the bot's ping",
     "changeLanguageDescription": "Change the language that the bot will respond in the server",
     "before": "Before",
-    "after": "After"
+    "after": "After",
+    "list_ignore_role_msg": "Ignore roles list"
 }

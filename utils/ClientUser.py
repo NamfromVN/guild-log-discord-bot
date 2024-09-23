@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
-from asyncio import create_task
 
 import disnake
 from disnake.ext import commands
@@ -19,10 +18,10 @@ class ClientUser(commands.AutoShardedBot):
     def __init__(self, *args, intents, command_sync_flag, command_prefix: str, **kwargs) -> None:
         super().__init__(*args, **kwargs, intents=intents, command_sync_flags=command_sync_flag, command_prefix=command_prefix)
         self.uptime = disnake.utils.utcnow()
-        self.serverdb = Databases()
+        self.serverdb: Databases = Databases()
         self.db =None
         self.handle_language = loc
-        self.webhook_utils = Process_webhook()
+        self.webhook_utils: Process_webhook = Process_webhook()
         self.remote_git_url = os.environ.get("SOURCE")
         self.task = asyncio
         self.environ = os.environ

@@ -25,9 +25,9 @@ class Language(commands.Cog):
                       )
     async def language_handle(self, ctx: disnake.ApplicationCommandInteraction, language: str):
         await ctx.response.defer()
-        old_setting = await self.client.serverdb.guild_language(ctx.guild_id)
+        old_setting = self.client.serverdb.guild_language(ctx.guild_id)
         if old_setting["status"] == "DataFound":
-            s = await self.client.serverdb.replace_language(ctx.guild_id, language)
+            s = self.client.serverdb.replace_language(ctx.guild_id, language)
             if s["status"] == "Failed": 
                 await ctx.edit_original_response(s["msg"]) 
                 return
@@ -35,7 +35,7 @@ class Language(commands.Cog):
             up_embed.description = self.client.handle_language.get(language, "commands",'languageChange')
             await ctx.edit_original_response(embed=up_embed)    
         else:
-            setting = await self.client.serverdb.func_language(ctx.guild_id, language)
+            setting = self.client.serverdb.func_language(ctx.guild_id, language)
             if setting["status"] != "Done":
                 await ctx.edit_original_response(setting["msg"])
                 return

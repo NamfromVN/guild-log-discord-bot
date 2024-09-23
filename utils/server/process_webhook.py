@@ -2,10 +2,10 @@ from aiohttp import ClientSession
 from disnake import Webhook
 
 
-class Process_webhook():
+class Process_webhook:
     def __init__(self):
-        self.__init__ = None
-    
+        pass
+
     async def process_webhook(self, webhook_uri, embed):
         """WEBHOOK MAIN"""
         if webhook_uri is None: return

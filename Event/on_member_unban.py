@@ -16,8 +16,8 @@ class ONUNBAN(commands.Cog):
     async def on_member_unban(self, guild: disnake.Guild, user: disnake.User):
 
 
-        data = await self.client.serverdb.get_webhook(guild.id)
-        language = await self.client.serverdb.guild_language(guild.id)
+        data = self.client.serverdb.get_webhook(guild.id)
+        language = self.client.serverdb.guild_language(guild.id)
         
 
         if data is None:
