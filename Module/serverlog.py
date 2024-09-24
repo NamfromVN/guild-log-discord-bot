@@ -80,7 +80,7 @@ class Serverlog(commands.Cog):
         await ctx.response.defer(ephemeral=True)
         check = self.bot.serverdb.check_database(ctx.guild.id)
         if check["status"] == "No_Data":
-            return await ctx.edit_original_response("Máy chủ này chưa thiết lập serverlog!", ephemeral=True) # type: ignore
+            return await ctx.edit_original_response("Máy chủ này chưa thiết lập serverlog!")
         ignore_list: list[Role] = []
         response: list[str] = []
         data = self.bot.serverdb.get_ignored_roles(ctx.guild.id)
