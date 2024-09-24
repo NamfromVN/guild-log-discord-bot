@@ -16,7 +16,7 @@ class HandleError(commands.Cog):
     @commands.Cog.listener('on_message_command_error')
     @commands.Cog.listener('on_slash_command_error')
     async def on_interaction_command_error(self, inter: disnake.AppCmdInter, error: Exception):
-        language = await self.bot.serverdb.guild_language(inter.guild_id)
+        language = self.bot.serverdb.guild_language(inter.guild_id)
 
         await self.hander_error_cmd(ctx=inter, error=error, language=language["language"])
     
