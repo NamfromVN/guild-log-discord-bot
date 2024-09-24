@@ -79,7 +79,7 @@ class Serverlog(commands.Cog):
     async def list_ignore_role(self, ctx: Union[commands.Context, ApplicationCommandInteraction]):
         await ctx.response.defer(ephemeral=True)
         check = self.bot.serverdb.check_database(ctx.guild.id)
-        if not check["webhook_url"]:
+        if check["status"] == "No_Data":
             return await ctx.edit_original_response("Máy chủ này chưa thiết lập serverlog!", ephemeral=True) # type: ignore
         ignore_list: list[Role] = []
         response: list[str] = []
