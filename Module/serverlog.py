@@ -74,19 +74,21 @@ class Serverlog(commands.Cog):
             await ctx.edit_original_response(embed=Embed.gen_error_embed(self.bot.handle_language.get(language["language"], "commands","server_log_not_found").format(cmd=cmd)))
             return
 
+    @commands.cooldown(1, 20, commands.BucketType.user)
     @commands.has_guild_permissions(manage_roles = True, manage_guild=True)
     @commands.slash_command(name="list_ignore_role", description=f"{desc_prefix} Return a whole ignore role list")
     async def list_ignore_role(self, ctx: Union[commands.Context, ApplicationCommandInteraction]):
         await ctx.response.defer(ephemeral=True)
+        language = self.bot.serverdb.guild_language(ctx.guild.id) or {"language": "vi"}
         check = self.bot.serverdb.check_database(ctx.guild.id)
         if check["status"] == "No_Data":
-            return await ctx.edit_original_response("Máy chủ này chưa thiết lập serverlog!")
+            return await ctx.edit_original_response(self.bot.handle_language.get(language["language"], "commands", "guild_not_setup"))
         ignore_list: list[Role] = []
         response: list[str] = []
         data = self.bot.serverdb.get_ignored_roles(ctx.guild.id)
         language = self.bot.serverdb.guild_language(ctx.guild.id)
         if data is None:
-            return await ctx.edit_original_response("Không có role nào được cài đặt cả")
+            return await ctx.edit_original_response(self.bot.handle_language.get(language["language"], "commands", "not_found_ignore_role"))
         for role in data:
             ignore_list.append(ctx.guild.get_role(role))
         for role in ignore_list:

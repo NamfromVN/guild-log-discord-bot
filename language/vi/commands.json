@@ -12,5 +12,7 @@
     "changeLanguageDescription": "Thay đổi ngôn ngữ mà bot sẽ phản hồi trong máy chủ",
     "before": "Trước đó",
     "after": "Sau",
-    "list_ignore_role_msg": "Các vai trò sẽ bị bỏ qua"
+    "list_ignore_role_msg": "Các vai trò sẽ bị bỏ qua",
+    "not_found_ignore_role": "Không có role nào được cài đặt cả",
+    "guild_not_setup": "Máy chủ này chưa thiết lập serverlog!"
 }

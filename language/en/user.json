@@ -9,5 +9,7 @@
     "mention_user_banned": "{user} has been banned from the server!",
     "message_edit": "Message Edited:",
     "message_edit_msg": "Message sent by {mention_author} edited in {channel}",
-    "go_to_msg": "Jump to message"
+    "go_to_msg": "Jump to message",
+    "member_join": "New member: {name}",
+    "member_leave": "Member leaved: {name}"
 }

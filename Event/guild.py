@@ -26,5 +26,14 @@ class GuildEntry(commands.Cog):
         except Exception as e:
             logger.error(f"Đã xảy ra lỗi {e}")
 
+    @commands.Cog.listener("on_guild_join")
+    async def guild_join(self, guild: disnake.Guild):
+
+        logger.info(f"Đã được thêm vào máy chủ mới: {guild.name} - [{guild.id}] | Số máy chủ: {len(self.client.guilds)}")
+
+        if self.client.guilds.__len__() == 100 and self.client.application_flags.gateway_message_content_limited:
+            logger.warning("Số máy chủ đã đạt 100 nhưng bạn chưa được nhận message intent, điều này có thể gây ra một số vấn đề khi sử dụng!")
+
+
 
 def setup(bot: ClientUser): bot.add_cog(GuildEntry(bot))
