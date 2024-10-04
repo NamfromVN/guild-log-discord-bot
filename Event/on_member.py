@@ -15,7 +15,7 @@ class OnMemberJoin(Cog):
 
         webhook_url = db.get_webhook(member.guild.id)
         embed = Embed(
-            description=lang_handle.get(language["language"], "user", "member_join").format({"name": member.mention})
+            description=lang_handle.get(language["language"], "user", "member_join").format(name=member.mention)
         )
         await self.bot.webhook_utils.process_webhook(webhook_url, embed=embed)
 
@@ -28,7 +28,7 @@ class OnMemberJoin(Cog):
 
         webhook_url = db.get_webhook(member.guild.id)
         embed =     Embed(
-            description=lang_handle.get(language["language"], "user", "member_leave").format({"name": member.mention})
+            description=lang_handle.get(language["language"], "user", "member_leave").format(name=member.mention)
         )
         await self.bot.webhook_utils.process_webhook(webhook_url, embed=embed)
 
